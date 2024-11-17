@@ -1,26 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Issue } from './entities/issue.entity';
+import { Category } from 'src/category/entities/category.entity';
 
 @Injectable()
 export class IssueService {
-  create(createIssueDto: CreateIssueDto) {
-    return 'This action adds a new issue';
+  constructor(
+    @InjectRepository(Issue)
+    private issueRepository: Repository<Issue>,
+  ) { }
+
+  create(createIssueDto: CreateIssueDto): Promise<Issue> {
+    const issueCreated = this.issueRepository.create(createIssueDto);
+
+    return this.issueRepository.save(issueCreated);
   }
 
-  findAll() {
-    return `This action returns all issue`;
+  async findAll(): Promise<Issue[] | undefined> {
+    return this.issueRepository.findBy({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} issue`;
+  findOne(id: number): Promise<Issue> {
+    return this.issueRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateIssueDto: UpdateIssueDto) {
-    return `This action updates a #${id} issue`;
+  update(id: number, updateCategoryDto: UpdateIssueDto): Promise<UpdateResult> {
+    const updatedCategory = this.issueRepository.update({ id }, updateCategoryDto);
+    return updatedCategory;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} issue`;
+  remove(id: number): Promise<DeleteResult> {
+    const removedCategory = this.issueRepository.delete({ id });
+    return removedCategory;
   }
 }
