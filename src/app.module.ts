@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { MailerModule } from './mailer/mailer.module';
 import { User } from './users/users.entity';
+import { CategoryModule } from './category/category.module';
+import { IssueModule } from './issue/issue.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { User } from './users/users.entity';
     AuthModule,
     UsersModule,
     MailerModule,
+    CategoryModule,
+    IssueModule,
   ],
   controllers: [AppController],
   providers: [AppService],
