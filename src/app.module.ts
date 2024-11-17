@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { MailerModule } from './mailer/mailer.module';
+import { User } from './users/users.entity';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { MailerModule } from './mailer/mailer.module';
       username: 'root',
       password: 'root',
       database: 'test',
-      entities: [],
+      entities: [User],
       synchronize: true,
     }),
     AuthModule,

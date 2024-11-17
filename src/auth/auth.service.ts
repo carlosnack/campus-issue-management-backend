@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/users.entity';
+import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -16,12 +17,14 @@ export class AuthService {
     pass: string,
   ): Promise<{ payload: User, access_token: string }> {
     
-    const user = await this.usersService.findOne(email);
+    const user = await this.usersService.findByEmail(email);
     if (!(await bcrypt.compare(pass, user.passwordHash))) {
       throw new UnauthorizedException();
     }
+    const jwtPayload = { sub: user.email, password: user.passwordHash };
     Reflect.deleteProperty(user, 'passwordHash');
-    const jwtPayload = { sub: user.email, username: user.passwordHash };
+    Reflect.deleteProperty(user, 'id');
+    
     return {
       payload: {
         ...user
