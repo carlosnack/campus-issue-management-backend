@@ -19,12 +19,19 @@ export class UsersService {
   }
 
   async create(user: CreateUserDto): Promise<User> {
-    user.passwordHash = await this.createHashPassword(user.extras.password, user.extras.passwordConfirm);
+    const userExists = await this.usersRepository.findOne({where: {email: user.email}});
+    if(userExists) {
+      throw new BadRequestException('Email already registered');
+    }
+    const passwordHash = await this.createHashPassword(user.extras.password, user.extras.passwordConfirm);
     delete user.extras;
-    const userCreated =  this.usersRepository.create(user);
+    const userCreated =  this.usersRepository.create({...user, passwordHash});
+
     return this.usersRepository.save(userCreated);
   }
   createHashPassword(password: string, passwordConfirm: string) {
+    console.log(password);
+    console.log(passwordConfirm);
     if (password !== passwordConfirm) {
       throw new BadRequestException('Passwords do not match');
     }

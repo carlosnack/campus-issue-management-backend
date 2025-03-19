@@ -4,7 +4,6 @@ import { UpdateIssueDto } from './dto/update-issue.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { Issue, IssueEntity } from './entities/issue.entity';
-import { Category } from 'src/category/entities/category.entity';
 
 @Injectable()
 export class IssueService {

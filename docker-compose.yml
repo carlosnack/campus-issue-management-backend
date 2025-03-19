@@ -1,19 +1,51 @@
 version: '3.8'
+
 services:
+
   mysql:
     image: mysql:8.0
     container_name: mysql-container
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: test
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
     ports:
-      - "3306:3306" # Mapear a porta 3306 do container para a máquina host
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
-    restart: always # Garante que o container reinicie automaticamente se falhar
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "1" # Limita a 50% de 1 núcleo
+          memory: "512M" # Limita a 512MB de RAM
+
+  nest-app:
+
+    build: . # Constrói a aplicação a partir do Dockerfile na raiz do projeto
+    container_name: nest-container
+    depends_on:
+      - mysql
+    environment:
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: test
+    ports:
+      - "3000:3000" # Mapeia a porta do NestJS para o host
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev # Comando para rodar a aplicação em desenvolvimento
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Limita a 50% de 1 núcleo
+          memory: "512M" # Limita a 512MB de RAM
 
 volumes:
   mysql_data:

@@ -18,8 +18,11 @@ export class AuthService {
   ): Promise<{ payload: User, access_token: string }> {
     
     const user = await this.usersService.findByEmail(email);
+    if(!user) {
+      throw new UnauthorizedException('User or email does not match');
+    }
     if (!(await bcrypt.compare(pass, user.passwordHash))) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('User or email does not match');
     }
     const jwtPayload = { sub: user.email, password: user.passwordHash };
     Reflect.deleteProperty(user, 'passwordHash');
