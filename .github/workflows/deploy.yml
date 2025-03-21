@@ -8,13 +8,17 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Conectar na EC2 e executar o deploy
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            ./deploy.sh
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Configurar chave SSH e autenticar na EC2
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H SEU-IP-DA-EC2 >> ~/.ssh/known_hosts
+
+      - name: Deploy na EC2
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@SEU-IP-DA-EC2 'bash -s' < ./deploy.sh
