@@ -21,4 +21,4 @@ jobs:
 
       - name: Verificar diretório e executar o deploy
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} 'echo "Verificando diretório"; ls -la /home/ubuntu/; echo "Executando deploy"; /home/ubuntu/deploy.sh'
