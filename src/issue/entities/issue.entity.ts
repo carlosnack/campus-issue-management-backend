@@ -1,15 +1,18 @@
-import { Category } from "src/category/entities/category.entity";
-import { User } from "src/users/users.entity";
 import { EntitySchema } from "typeorm";
+import { IssueType } from "../../entities/types";
+import { User } from "src/users/users.entity";
+import { IssueInteraction } from "src/issue-interaction/entities/issue-interaction.entity";
 
-export class Issue {
+export class Issue implements IssueType {
   id: number;
   title: string;
   description: string;
-  userCreationId: string; // FK explícita
-  userCreation: User;    // Relacionamento com o User
-  categoryId: string;
-  category: Category;
+  status: string;
+  userCreationId: number;
+  userCreation: User;
+  interactions: IssueInteraction[];
+  createdAt: Date;
+  location: any;
 }
 
 export const IssueEntity = new EntitySchema<Issue>({
@@ -22,33 +25,39 @@ export const IssueEntity = new EntitySchema<Issue>({
     },
     title: {
       type: String,
+      length: 100
     },
     description: {
+      type: "text",
+      nullable: false
+    },
+    status: {
       type: String,
+      default: 'TO-DO',
+      length: 30
     },
     userCreationId: {
-      type: String,
+      type: Number,
+      name: 'user_creation_id'
     },
-    categoryId: {
-      type: String,
+    createdAt: {
+      type: 'timestamp',
+      createDate: true,
+      name: 'created_at',
+      nullable: false,
     },
   },
   relations: {
-    userCreation: { // Nome da relação ajustado para coincidir com o campo relacionado
-      type: "many-to-one", // Tipo de relação
-      target: "User",      // Nome da entidade relacionada
-      joinColumn: {        // Configura o join column (FK)
-        name: "userCreationId", // Nome da coluna FK na tabela atual
-      },
-      onDelete: "CASCADE", // Configuração adicional para comportamento da FK
-    },
-    category: {
+    userCreation: {
       type: "many-to-one",
-      target: "Category",
-      joinColumn: {
-        name: "categoryId"
-      },
-      onDelete: "CASCADE"
+      target: "User",
+      joinColumn: { name: 'user_creation_id' },
+      onDelete: "CASCADE",
+    },
+    interactions: {
+      type: "one-to-many",
+      target: "IssueInteraction",
+      inverseSide: "issue"
     }
-  },
+  }
 });

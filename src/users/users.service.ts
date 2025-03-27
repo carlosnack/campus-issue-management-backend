@@ -32,7 +32,7 @@ export class UsersService {
   createHashPassword(password: string, passwordConfirm: string) {
     console.log(password);
     console.log(passwordConfirm);
-    if (password !== passwordConfirm) {
+    if (password != passwordConfirm) {
       throw new BadRequestException('Passwords do not match');
     }
     return bcrypt.hash(password, 10);

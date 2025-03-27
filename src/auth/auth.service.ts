@@ -24,9 +24,8 @@ export class AuthService {
     if (!(await bcrypt.compare(pass, user.passwordHash))) {
       throw new UnauthorizedException('User or email does not match');
     }
-    const jwtPayload = { sub: user.email, password: user.passwordHash };
+    const jwtPayload = { sub: user.id, password: user.passwordHash, user };
     Reflect.deleteProperty(user, 'passwordHash');
-    Reflect.deleteProperty(user, 'id');
     
     return {
       payload: {

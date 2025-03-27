@@ -11,6 +11,8 @@ import { CategoryModule } from './category/category.module';
 import { IssueModule } from './issue/issue.module';
 import { IssueEntity } from './issue/entities/issue.entity';
 import { CategoryEntity } from './category/entities/category.entity';
+import { IssueInteractionModule } from './issue-interaction/issue-interaction.module';
+import { IssueInteractionEntity } from './issue-interaction/entities/issue-interaction.entity';
 
 @Module({
   imports: [
@@ -27,8 +29,13 @@ import { CategoryEntity } from './category/entities/category.entity';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        entities: [UserEntity, IssueEntity, CategoryEntity],
+        entities: [
+          UserEntity,
+          IssueEntity,
+          IssueInteractionEntity
+        ],
         synchronize: true,
+        logging: ['query', 'error'],
       }),
     }),
     AuthModule,
@@ -36,8 +43,9 @@ import { CategoryEntity } from './category/entities/category.entity';
     MailerModule,
     CategoryModule,
     IssueModule,
+    IssueInteractionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

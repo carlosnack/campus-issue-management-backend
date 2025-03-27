@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { Request } from 'express';
 import { log } from 'console';
-
+''
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) { }
@@ -16,25 +16,34 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-    console.log('Token extraído:', token);
     if (!token) {
       throw new UnauthorizedException('Token não encontrado no cabeçalho Authorization');
     }
     try {
-      const payload = await this.jwtService.verifyAsync(
-        token,
-        {
-          secret: jwtConstants.secret
-        }
-      );
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      request['user'] = payload;
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      });
+
+      // Verifica se o payload contém a estrutura esperada
+      if (!payload?.sub) {
+        throw new UnauthorizedException('Estrutura do token inválida');
+      }
+      const userId = Number(payload.sub);
+      if (isNaN(userId)) {
+        throw new UnauthorizedException('ID de usuário inválido no token');
+      }
+
+      // Atribui o usuário de forma padronizada
+      request.user = {
+        id: userId,
+        ...(payload.user || {}) // Inclui outras propriedades se existirem
+      };
+
+      return true;
     } catch (err) {
       console.error('Erro ao verificar o token:', err);
       throw new UnauthorizedException('Token inválido');
     }
-    return true;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
