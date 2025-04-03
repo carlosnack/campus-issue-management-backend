@@ -10,7 +10,6 @@ export class Issue implements IssueType {
   status: string;
   userCreationId: number;
   userCreation: User;
-  interactions: IssueInteraction[];
   createdAt: Date;
   location: any;
 }
@@ -53,11 +52,6 @@ export const IssueEntity = new EntitySchema<Issue>({
       target: "User",
       joinColumn: { name: 'user_creation_id' },
       onDelete: "CASCADE",
-    },
-    interactions: {
-      type: "one-to-many",
-      target: "IssueInteraction",
-      inverseSide: "issue"
     }
   }
 });

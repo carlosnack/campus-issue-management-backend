@@ -1,5 +1,4 @@
 import { EntitySchema } from "typeorm";
-import { IssueType } from "../../entities/types";
 import { Issue } from "src/issue/entities/issue.entity";
 import { User } from "src/users/users.entity";
 
@@ -10,8 +9,8 @@ export class IssueInteraction {
     isFromSupport: boolean;
     issueId: number;
     userId: number;
-    issue: Issue;
-    user: User;
+    issueIdentifier: Issue;
+    userCreation: User;
 }
 
 export const IssueInteractionEntity = new EntitySchema<IssueInteraction>({
@@ -45,18 +44,18 @@ export const IssueInteractionEntity = new EntitySchema<IssueInteraction>({
         }
     },
     relations: {
-        issue: {
-            type: "many-to-one",
-            target: "Issue",
-            joinColumn: { name: 'issue_id' },
-            inverseSide: "interactions",
-            onDelete: "CASCADE"
-        },
-        user: {
+        userCreation: {
             type: "many-to-one",
             target: "User",
-            joinColumn: { name: 'user_id' },
-            onDelete: "CASCADE"
+            joinColumn: { name: 'user_creation_id' },
+            onDelete: "CASCADE",
+        },
+        issueIdentifier: {
+            type: "many-to-one",
+            target: "issue",
+            joinColumn: { name: 'issue_id' },
+            onDelete: "CASCADE",
         }
+
     }
 });

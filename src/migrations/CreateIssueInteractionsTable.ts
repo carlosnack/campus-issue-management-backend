@@ -4,7 +4,7 @@ import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 export class CreateIssueInteractionsTable implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(new Table({
-            name: 'issue_interactions',
+            name: 'issue-interactions',
             columns: [
                 {
                     name: 'id',
@@ -54,6 +54,6 @@ export class CreateIssueInteractionsTable implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('issue_interactions');
+        await queryRunner.dropTable('issue-nteractions');
     }
 }
