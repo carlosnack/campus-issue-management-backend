@@ -4,16 +4,18 @@ import { UpdateIssueDto } from './dto/update-issue.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { Issue, IssueEntity } from './entities/issue.entity';
-import { createPoint } from 'src/common/utils/spatial';
+import { IssueInteraction, IssueInteractionEntity } from 'src/issue-interaction/entities/issue-interaction.entity';
 
 @Injectable()
 export class IssueService {
   constructor(
     @InjectRepository(IssueEntity)
     private issueRepository: Repository<Issue>,
+    @InjectRepository(IssueInteractionEntity)
+    private issueInteractionRepository: Repository<IssueInteraction>,
   ) { }
 
-  create(createIssueDto: CreateIssueDto): Promise<Issue> {
+  async create(createIssueDto: CreateIssueDto): Promise<Issue> {
     // Prepara os dados para criação
     const issueData: Partial<Issue> = {
       title: createIssueDto.title,
@@ -29,7 +31,19 @@ export class IssueService {
       };
     }
 
-    const issueCreated = this.issueRepository.create(issueData);
+    const issueCreate = this.issueRepository.create(issueData);
+    const issueCreated = await this.issueRepository.save(issueCreate);
+
+    const firstIssueInteraction: Partial<IssueInteraction> = {
+      issueId: issueCreated.id,
+      userCreationId: issueCreated.userCreationId,
+      isFromSupport: false,
+      message: `Ticket ${issueCreated.id} criado, descrição do incidente: ` + issueCreated.description,
+    }
+
+    const issueInteractionCreated = this.issueInteractionRepository.create(firstIssueInteraction)
+    this.issueInteractionRepository.save(issueInteractionCreated);
+
     return this.issueRepository.save(issueCreated);
   }
 
@@ -78,9 +92,9 @@ export class IssueService {
       throw new Error('ID de usuário inválido recebido no service');
     }
 
-    
+
     return this.issueRepository.find({
-      where: { 
+      where: {
         userCreationId: userId // Converte para string se necessário
       },
     });

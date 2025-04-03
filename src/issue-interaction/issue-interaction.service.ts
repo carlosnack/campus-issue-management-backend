@@ -14,14 +14,14 @@ export class IssueInteractionService {
 
   async create(createDto: CreateIssueInteractionDto) {
     // Validação explícita dos IDs
-    if (!createDto.issueId || !createDto.userId) {
+    if (!createDto.issueId || !createDto.userCreationId) {
       throw new Error('IDs de relacionamento são obrigatórios');
     }
 
     const interaction = this.repo.create({
       ...createDto,
       issueId: createDto.issueId, // Atribuição explícita
-      userId: createDto.userId    // Atribuição explícita
+      userCreationId: createDto.userCreationId    // Atribuição explícita
     });
 
     return await this.repo.save(interaction);
@@ -30,7 +30,6 @@ export class IssueInteractionService {
   async findByIssueId(issueId: number) {
     return await this.repo.find({
       where: { issueId }, // Filtro pelo ID explícito
-      relations: ['user'],
       order: { createdAt: 'ASC' }
     });
   }

@@ -8,7 +8,7 @@ export class IssueInteraction {
     createdAt: Date;
     isFromSupport: boolean;
     issueId: number;
-    userId: number;
+    userCreationId: number;
     issueIdentifier: Issue;
     userCreation: User;
 }
@@ -38,9 +38,9 @@ export const IssueInteractionEntity = new EntitySchema<IssueInteraction>({
             type: Number,
             name: 'issue_id'
         },
-        userId: {
+        userCreationId: {
             type: Number,
-            name: 'user_id'
+            name: 'user_creation_id'
         }
     },
     relations: {
